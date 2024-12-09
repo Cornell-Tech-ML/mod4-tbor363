@@ -22,6 +22,22 @@ Fn = TypeVar("Fn")
 
 
 def njit(fn: Fn, **kwargs: Any) -> Fn:
+    """Compiles a function using Numba's `njit` decorator with inline optimization.
+
+    This function applies a just-in-time compilation to the provided function using Numba,
+    optimizing it for performance. Additional keyword arguments can be passed to configure
+    the compilation behavior.
+
+    Args:
+    ----
+        fn: The function to compile for optimized execution.
+        **kwargs: Additional keyword arguments to customize the compilation.
+
+    Returns:
+    -------
+        The compiled function optimized for execution.
+
+    """
     return _njit(inline="always", **kwargs)(fn)  # type: ignore
 
 
@@ -145,6 +161,27 @@ class Conv1dFun(Function):
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
+        """Performs the backward pass for the 1D convolution operation.
+
+        Computes the gradients of the input and weight tensors using the gradient
+        of the output tensor.
+
+        Args:
+        ----
+            ctx: The context object containing saved tensors from the forward pass
+                (`input` and `weight`).
+            grad_output: The gradient of the output tensor from the subsequent
+                layer with shape (batch, out_channels, width).
+
+        Returns:
+        -------
+            A tuple containing:
+                - The gradient of the input tensor (`grad_input`) with shape
+                (batch, in_channels, width).
+                - The gradient of the weight tensor (`grad_weight`) with shape
+                (out_channels, in_channels, kernel_width).
+
+        """
         input, weight = ctx.saved_values
         batch, in_channels, w = input.shape
         out_channels, in_channels, kw = weight.shape
@@ -238,7 +275,25 @@ def _tensor_conv2d(
     s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
 
     # TODO: Implement for Task 4.2.
-    raise NotImplementedError("Need to implement for Task 4.2")
+    for out_i in prange(out_size):
+        out_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
+        to_index(out_i, out_shape, out_index)
+
+        c = 0
+        for j in prange(in_channels):
+            for h in range(kh):
+                for w in range(kw):
+                    if reverse:
+                        ki = out_index[2] - h
+                        kj = out_index[3] - w
+                    else:
+                        ki = out_index[2] + h
+                        kj = out_index[3] + w
+                    if ki < height and ki >= 0 and kj < width and kj >= 0:
+                        in_index = out_index[0] * s10 + j * s11 + ki * s12 + kj * s13
+                        weight_index = out_index[1] * s20 + j * s21 + h * s22 + w * s23
+                        c += input[in_index] * weight[weight_index]
+        out[out_i] = c
 
 
 tensor_conv2d = njit(_tensor_conv2d, parallel=True, fastmath=True)
@@ -272,6 +327,28 @@ class Conv2dFun(Function):
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
+        """Performs the backward pass for the 2D convolution operation.
+
+        This method computes the gradients of the input and weight tensors using
+        the gradient of the output tensor. The gradients are calculated by applying
+        the convolution operation in reverse for both the input and the weight.
+
+        Args:
+        ----
+            ctx: The context object containing saved tensors from the forward pass
+                (`input` and `weight`).
+            grad_output: The gradient of the output tensor from the subsequent
+                layer with shape (batch, out_channels, height, width).
+
+        Returns:
+        -------
+            A tuple containing:
+                - The gradient of the input tensor (`grad_input`) with shape
+                (batch, in_channels, height, width).
+                - The gradient of the weight tensor (`grad_weight`) with shape
+                (out_channels, in_channels, kernel_height, kernel_width).
+
+        """
         input, weight = ctx.saved_values
         batch, in_channels, h, w = input.shape
         out_channels, in_channels, kh, kw = weight.shape
