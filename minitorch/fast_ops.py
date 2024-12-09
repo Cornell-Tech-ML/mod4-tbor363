@@ -186,9 +186,9 @@ def tensor_map(
     ) -> None:
         # TODO: Implement for Task 3.1.
         # check if strides of out and in_storage are aligned
-        strides_aligned = np.array_equal(out_strides, in_strides) and np.array_equal(
-            out_shape, in_shape
-        )
+        # strides_aligned = np.array_equal(out_strides, in_strides) and np.array_equal(
+        #     out_shape, in_shape
+        # )
 
         if (
             len(out_strides) != len(in_strides)
@@ -246,12 +246,12 @@ def tensor_zip(
     ) -> None:
         # TODO: Implement for Task 3.1.
 
-        strides_aligned = (
-            np.array_equal(out_strides, b_strides)
-            and np.array_equal(out_strides, a_strides)
-            and np.array_equal(out_shape, a_shape)
-            and np.array_equal(out_shape, b_shape)
-        )
+        # strides_aligned = (
+        #     np.array_equal(out_strides, b_strides)
+        #     and np.array_equal(out_strides, a_strides)
+        #     and np.array_equal(out_shape, a_shape)
+        #     and np.array_equal(out_shape, b_shape)
+        # )
 
         if (
             len(out_strides) != len(a_strides)
