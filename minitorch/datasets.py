@@ -5,6 +5,17 @@ from typing import List, Tuple
 
 
 def make_pts(N: int) -> List[Tuple[float, float]]:
+    """Create a list of N random 2D points.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        List of N Points.
+
+    """
     X = []
     for i in range(N):
         x_1 = random.random()
@@ -21,6 +32,18 @@ class Graph:
 
 
 def simple(N: int) -> Graph:
+    """Generates a Graph with N points, labeled with y={0,1}. Points are split in
+    half at x=0.5.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points split about x=0.5.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -30,6 +53,17 @@ def simple(N: int) -> Graph:
 
 
 def diag(N: int) -> Graph:
+    """Generate a Graph with N points, labeled with y={0,1}. Points are split along a diagonal line.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points split diagonally.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -39,6 +73,17 @@ def diag(N: int) -> Graph:
 
 
 def split(N: int) -> Graph:
+    """Generates a Graph with N points, labeled with y={0,1}. Class of points split down the middle by other class of points.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points split in the middle.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -48,6 +93,17 @@ def split(N: int) -> Graph:
 
 
 def xor(N: int) -> Graph:
+    """Generates a Graph with N points, labeled with y={0,1}. Points are split into 4 quadrants.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points split into 4 quadrants.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -57,6 +113,17 @@ def xor(N: int) -> Graph:
 
 
 def circle(N: int) -> Graph:
+    """Geneartes a Graph with N points, labeled with y={0,1}. Class of points in a circle in the center, other class surrounds the circle.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points split into a circle.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -67,10 +134,44 @@ def circle(N: int) -> Graph:
 
 
 def spiral(N: int) -> Graph:
+    """Generates a Graph with N points, labeled with y={0,1}. Points form a spiral.
+
+    Args:
+    ----
+        N: number of points.
+
+    Returns:
+    -------
+        Graph with N points aligned in a spiral.
+
+    """
+
     def x(t: float) -> float:
+        """Calculates the value of t * math.cos(t) / 20.0.
+
+        Args:
+        ----
+            t: input value.
+
+        Returns:
+        -------
+            result of the expression t * math.cos(t) / 20.0.
+
+        """
         return t * math.cos(t) / 20.0
 
     def y(t: float) -> float:
+        """Calculates the value of t * math.sin(t) / 20.0.
+
+        Args:
+        ----
+            t: input value.
+
+        Returns:
+        -------
+            Result of the expression t * math.sin(t) / 20.0.
+
+        """
         return t * math.sin(t) / 20.0
 
     X = [
